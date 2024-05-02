@@ -35,7 +35,11 @@ accelerate launch --multi_gpu train_controlnet.py \
     --proportion_empty_prompts ${PROMPT_DROPOUT}
 ```
 
-Above is the exact training script that I used to train a controlnet tile w.r.t. [lambdalabs/miniSD-diffusers](https://huggingface.co/lambdalabs/miniSD-diffusers), a 256x256 SD model. So in my case I was doing 64x64 -> 256x256 upsampling. As you can see from the bash command I was using laion400m as training data. The training was done on 8x A5000 (24G) GPUs within 5 or 6 hours if I remember correctly. The training essentially worked, which can be seen in the below screenshot. Interestingly, I did observe the ["sudden convergence" phenomenon](https://github.com/lllyasviel/ControlNet/blob/main/docs/train.md#more-consideration-sudden-converge-phenomenon-and-gradient-accumulation) mentioned by the author of ControlNet, where in the first 3k steps the output images didn't follow conditions at all, yet suddenly after that it started to follow the conditions.
+Above is the exact training script that I used to train a controlnet tile w.r.t. [lambdalabs/miniSD-diffusers](https://huggingface.co/lambdalabs/miniSD-diffusers), a 256x256 SD model. So in my case I was doing 64x64 -> 256x256 upsampling. The key data preprocessing part in the code is at [here](https://github.com/zjysteven/controlnet_tile/blob/d92aa059c3281e81e84b94de17a044e575c5852a/train_controlnet.py#L744-L766), where you could see I was using low-resolution images as conditions and high-resolution images as targets.
+
+
+
+I was using laion400m as training data. The training was done on 8x A5000 (24G) GPUs within 5 or 6 hours (with 10k training steps) if I remember correctly. The training essentially worked, which can be seen in the below screenshot. Interestingly, I did observe the ["sudden convergence" phenomenon](https://github.com/lllyasviel/ControlNet/blob/main/docs/train.md#more-consideration-sudden-converge-phenomenon-and-gradient-accumulation) mentioned by the author of ControlNet, where in the first 3k steps the output images didn't follow conditions at all, yet suddenly after that it started to follow the conditions.
 
 ![test_screenshot](./test_screenshot.png)
 
